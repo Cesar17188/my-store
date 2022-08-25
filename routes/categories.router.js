@@ -15,10 +15,10 @@ router.get('/', (req, res) => {
   ]);
 });
 
-router.get('/:categoryId', (req, res) => {
-  const { categoryId } = req.params;
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
   res.json({
-    categoryId,
+    id,
     name: 'category 2',
     description: 'Adventure'
   });
