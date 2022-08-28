@@ -1,43 +1,66 @@
 const express = require('express');
+const UsersService = require('../services/users.service');
 
 const router = express.Router();
+const usersService = new UsersService();
 
 router.get('/', (req, res) => {
   const { limit, offset } = req.query;
+  const users = usersService.find();
   if (limit && offset) {
     res.json({
       limit,
-      offset
+      offset,
+      users
     });
   } else {
-    res.send('No hay parámetros');
+    res.json(users);
   }
+});
+
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  const user = usersService.findOne(id);
+  res.json(user);
 });
 
 router.post('/', (req, res) => {
   const body = req.body;
-  res.json({
+  usersService.create(body);
+  res.status(201).json({
     message: 'created',
-    data: body
   });
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
-  const body = req.body;
-  res.json({
-    message: 'updated',
-    data: body,
-    id,
-  });
+  const {name, age} = req.body;
+  const updateUser = usersService.update(id, {name, age});
+  if(updateUser) {
+    res.json({
+      message: 'updated',
+      id,
+      data: req.body
+    });
+  }else {
+    res.status(501).json({message: "Internal error"})
+  }
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    message: 'deleted',
-    id,
-  });
+  const newUser = usersService.delete(id);
+  if(newUser) {
+    res.status(201).json({
+      message: 'deleted',
+      id,
+    });
+  } else {
+    res.status(501).json({
+      message: 'User not found'
+    });
+  }
+
 });
 
 module.exports = router;
