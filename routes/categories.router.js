@@ -23,22 +23,19 @@ router.get('/:categoryId/products/:productId', (req, res) => {
 
 router.post('/', (req, res) => {
   const body = req.body;
-  categoriesService.create(body);
+  const newCategory = categoriesService.create(body);
   res.status(201).json({
     message: 'created',
+    category: newCategory
   });
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
-  const {name, description} = req.body;
-  const updateCategory = categoriesService.update(id, {name, description});
+  const body = req.body;
+  const updateCategory = categoriesService.update(id, body);
   if(updateCategory) {
-    res.json({
-      message: 'updated',
-      id,
-      data: req.body
-    });
+    res.json(updateCategory);
   }else {
     res.status(501).json({message: "Internal error"})
   }
@@ -46,12 +43,9 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const newCategory = categoriesService.delete(id);
-  if(newCategory) {
-    res.status(201).json({
-      message: 'deleted',
-      id,
-    });
+  const rta = categoriesService.delete(id);
+  if(rta) {
+    res.status(201).json(rta);
   } else {
     res.status(501).json({
       message: 'Category not found'

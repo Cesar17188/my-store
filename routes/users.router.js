@@ -26,22 +26,19 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const body = req.body;
-  usersService.create(body);
+  const newUser = usersService.create(body);
   res.status(201).json({
     message: 'created',
+    product: newUser
   });
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
-  const {name, age} = req.body;
-  const updateUser = usersService.update(id, {name, age});
+  const body = req.body;
+  const updateUser = usersService.update(id, body);
   if(updateUser) {
-    res.json({
-      message: 'updated',
-      id,
-      data: req.body
-    });
+    res.json(updateUser);
   }else {
     res.status(501).json({message: "Internal error"})
   }
@@ -49,12 +46,9 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const newUser = usersService.delete(id);
-  if(newUser) {
-    res.status(201).json({
-      message: 'deleted',
-      id,
-    });
+  const rta = usersService.delete(id);
+  if(rta) {
+    res.status(201).json(rta);
   } else {
     res.status(501).json({
       message: 'User not found'

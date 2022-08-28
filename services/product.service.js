@@ -1,7 +1,6 @@
 const faker = require('faker');
 
 class ProductsService {
-
   constructor() {
     this.products = [];
     this.generate();
@@ -20,10 +19,10 @@ class ProductsService {
   }
 
   create(body) {
-    const id = faker.datatype.uuid()
-    body = {id, ...body};
-    this.products.push(body);
-    return this.products;
+    const id = faker.datatype.uuid();
+    const newProduct = { id, ...body };
+    this.products.push(newProduct);
+    return newProduct;
   }
 
   find() {
@@ -31,29 +30,29 @@ class ProductsService {
   }
 
   findOne(id) {
-    return this.products.find(item => item.id === id);
+    return this.products.find((item) => item.id === id);
   }
 
-  update(id, body = {}) {
-    const product = this.findOne(id);
-    const index = this.products.findIndex(item => item.id === id);
-    if (product) {
-      this.products[index] = {
-        id: product.id,
-        name: body.name || product.name,
-        price: body.price || product.price,
-        image: body.image || product.image
-      }
+  update(id, changes) {
+    const index = this.products.findIndex((item) => item.id === id);
+    if (index === -1) {
+      throw new Error('product not found');
     }
-    return product;
+    const product = this.products[index];
+    this.products[index] = {
+      ...product,
+      ...changes
+    };
+    return this.products[index];
   }
 
   delete(id) {
-    const product = {...this.products.find(item => item)};
-    if (product) {
-      this.products = this.products.filter(p => p.id !== id);
-      return product;
+    const index = this.products.findIndex((item) => item.id === id);
+    if (index === -1) {
+      throw new Error('product not found');
     }
+    this.products.splice(index, 1);
+    return { id };
   }
 }
 

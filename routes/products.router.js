@@ -21,22 +21,19 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const body = req.body;
-  productsService.create(body);
+  const newProduct = productsService.create(body);
   res.status(201).json({
     message: 'created',
+    product: newProduct
   });
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
-  const {name, price, image} = req.body;
-  const updateProduct = productsService.update(id, {name, price, image});
+  const body = req.body;
+  const updateProduct = productsService.update(id, body);
   if(updateProduct) {
-    res.json({
-      message: 'updated',
-      id,
-      data: req.body
-    });
+    res.json(updateProduct);
   }else {
     res.status(501).json({message: "Internal error"})
   }
@@ -44,12 +41,9 @@ router.patch('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const newProduct = productsService.delete(id);
-  if(newProduct) {
-    res.status(201).json({
-      message: 'deleted',
-      id,
-    });
+  const rta = productsService.delete(id);
+  if(rta) {
+    res.status(201).json(rta);
   } else {
     res.status(501).json({
       message: 'Product not found'

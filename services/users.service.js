@@ -20,9 +20,9 @@ class UsersService {
 
   create(body) {
     const id = faker.datatype.uuid()
-    body = {id, ...body};
-    this.users.push(body);
-    return this.users;
+    const newUser = {id, ...body};
+    this.users.push(newUser);
+    return newUser;
   }
 
   find() {
@@ -33,25 +33,26 @@ class UsersService {
     return this.users.find(item => item.id === id);
   }
 
-  update(id, body = {}) {
-    const user = this.findOne(id);
+  update(id, changes) {
     const index = this.users.findIndex(item => item.id === id);
-    if (user) {
-      this.users[index] = {
-        id: user.id,
-        name: body.name || user.name,
-        age: body.age || user.age,
-      }
+    if (index === -1) {
+      throw new Error('product not found');
     }
-    return user;
+    const user = this.users[index];
+    this.users[index] = {
+      ...user,
+      ...changes
+    };
+    return this.users[index];
   }
 
   delete(id) {
-    const user = {...this.users.find(item => item)};
-    if (user) {
-      this.users = this.users.filter(p => p.id !== id);
-      return user;
+    const index = this.users.findIndex(item => item.id === id);
+    if (index === -1) {
+      throw new Error('user not found');
     }
+    this.users.splice(index, 1);
+    return { id };
   }
 }
 

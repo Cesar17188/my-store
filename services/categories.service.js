@@ -23,9 +23,9 @@ class CategoriesService {
 
   create(body) {
     const id = faker.datatype.uuid()
-    body = {id, ...body};
-    this.categories.push(body);
-    return this.categories;
+    const newCategory = {id, ...body};
+    this.categories.push(newCategory);
+    return newCategory;
   }
 
   find() {
@@ -39,28 +39,29 @@ class CategoriesService {
   findCategoryProduct(categoryId ,productId) {
     const category = this.findOne(categoryId);
     const product = productsService.findOne(productId);
-    return {...category, product};
+    return {category, product};
   }
 
-  update(id, body = {}) {
-    const category = this.findOne(id);
+  update(id, changes) {
     const index = this.categories.findIndex(item => item.id === id);
-    if (category) {
-      this.categories[index] = {
-        id: category.id,
-        name: body.name || category.name,
-        description: body.description || category.description
-      }
+    if (index === -1) {
+      throw new Error('product not found');
     }
-    return category;
+    const category = this.categories[index];
+    this.categories[index] = {
+      ...category,
+      ...changes
+    };
+    return this.categories[index];
   }
 
   delete(id) {
-    const category = {...this.categories.find(item => item)};
-    if (category) {
-      this.categories = this.categories.filter(p => p.id !== id);
-      return category;
+    const index = this.categories.findIndex((item) => item.id === id);
+    if (index === -1) {
+      throw new Error('product not found');
     }
+    this.categories.splice(index, 1);
+    return { id };
   }
 }
 
